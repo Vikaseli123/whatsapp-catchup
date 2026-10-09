@@ -51,6 +51,28 @@ For a group, enter member names (comma or line separated) in **Group member name
 
 For Ollama, run a local model and set `OPENROUTER_BASE_URL=http://localhost:11434/v1`; the app then does not require an OpenRouter key.
 
+## Deploy on Render
+
+Create a **Web Service** from this repository and use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Environment | Python 3 |
+| Build command | `pip install -r requirements.txt` |
+| Start command | `gunicorn app:app --bind 0.0.0.0:$PORT` |
+
+Add the following environment variables in Render's **Environment** section:
+
+```text
+OPENROUTER_API_KEY=your_key_here
+OPENROUTER_MODEL=openai/gpt-4o-mini
+FLASK_SECRET_KEY=a-long-random-secret
+```
+
+`OPENROUTER_BASE_URL` is optional and defaults to OpenRouter. Do not set it to a localhost Ollama URL on Render, because Render cannot access the model running on your own computer.
+
+> Render's default filesystem is ephemeral. This app's SQLite database stores user accounts, so accounts can be reset when the service is redeployed or restarted. For persistent accounts, attach a Render Persistent Disk (for example at `/var/data`) and set `DATABASE_PATH=/var/data/catchup.sqlite3`, or migrate the account table to Render PostgreSQL.
+
 ## Project structure
 
 ```text

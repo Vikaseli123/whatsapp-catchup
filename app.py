@@ -25,7 +25,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB upload cap
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY") or secrets.token_hex(32)
-app.config["DATABASE"] = os.path.join(app.instance_path, "catchup.sqlite3")
+app.config["DATABASE"] = os.getenv("DATABASE_PATH", os.path.join(app.instance_path, "catchup.sqlite3"))
 
 API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
@@ -40,7 +40,7 @@ MAX_MSG_CHARS = 600
 # --------------------------------------------------------------------------
 def get_db():
     if "db" not in g:
-        os.makedirs(app.instance_path, exist_ok=True)
+        os.makedirs(os.path.dirname(app.config["DATABASE"]), exist_ok=True)
         g.db = sqlite3.connect(app.config["DATABASE"])
         g.db.row_factory = sqlite3.Row
     return g.db
