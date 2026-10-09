@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catch-up · Your WhatsApp briefing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/spark/assets/libs/bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/spark/assets/libs/bootstrap-icons/bootstrap-icons.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/spark/assets/css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="catchup-body">
+  <aside class="catchup-sidebar">
+    <a class="catchup-brand" href="{{ url_for('index') }}"><span class="brand-spark"><i class="bi bi-lightning-charge-fill"></i></span><span>Catch-up</span></a>
+    <p class="sidebar-kicker">WHATSAPP BRIEFING</p>
+    <a class="side-link active" href="#workspace"><i class="bi bi-grid-1x2-fill"></i> Catch-up workspace</a>
+    <div class="sidebar-note">
+      <i class="bi bi-shield-check"></i>
+      <div><strong>Private by design</strong><br>Chat exports are not saved.</div>
+    </div>
+    <div class="account-card">
+      <div class="account-avatar">{{ user.name[:1]|upper }}</div>
+      <div class="min-w-0"><strong>{{ user.name }}</strong><small>{{ user.email }}</small></div>
+      <form action="{{ url_for('logout') }}" method="post"><button class="icon-button" aria-label="Log out" title="Log out"><i class="bi bi-box-arrow-right"></i></button></form>
+    </div>
+  </aside>
+
+  <main class="catchup-main" id="workspace">
+    <header class="workspace-header">
+      <div><p class="eyebrow">YOUR PERSONAL DIGEST</p><h1>What did I miss?</h1><p>Turn a WhatsApp export into a clear, actionable briefing.</p></div>
+      <div class="header-status"><i class="bi bi-circle-fill"></i> Ready to analyse</div>
+    </header>
+
+    <div class="row g-4 align-items-start">
+      <div class="col-xl-5">
+        <form id="form" class="card app-card input-card" enctype="multipart/form-data">
+          <div class="card-body">
+            <div class="card-heading"><div><span class="section-icon"><i class="bi bi-chat-square-text"></i></span><h2>Your chat</h2><p>Paste an export or upload its text file.</p></div><button type="button" id="sample" class="btn btn-outline-secondary btn-sm">Use sample</button></div>
+            <div class="mb-3"><label class="form-label" for="chat_text">Paste messages</label><textarea id="chat_text" name="chat_text" class="form-control" placeholder="12/03/25, 10:45 - Priya: Hey team, ..."></textarea></div>
+            <div class="mb-3"><label class="form-label" for="chat_file">Or upload WhatsApp export</label><input class="form-control" type="file" id="chat_file" name="chat_file" accept=".txt,.zip,text/plain,application/zip"><details class="help-details"><summary>How do I export a chat?</summary><p>In WhatsApp, open the chat details, choose <strong>Export chat</strong>, then choose <strong>Without media</strong>. Upload the exported .txt or .zip file here.</p></details></div>
+            <div class="row g-3"><div class="col-md-6"><label class="form-label" for="user_name">Your name(s) in chat</label><input class="form-control" id="user_name" name="user_name" value="{{ user.name }}" placeholder="Rahul, Rahul K"></div><div class="col-md-6"><label class="form-label" for="last_n">Only last N messages</label><input class="form-control" type="number" min="0" id="last_n" name="last_n" placeholder="All messages"></div></div>
+            <div class="mt-3"><label class="form-label" for="group_members">Group member names <span class="optional">optional</span></label><textarea class="form-control compact-area" id="group_members" name="group_members" placeholder="Priya, Arjun, Meera"></textarea><div class="field-help"><i class="bi bi-people"></i> For group chats, add names separated by commas or new lines. This lets <code>@all</code> and <code>@everyone</code> correctly include you. Leave blank for direct chats; sender names are read from the export.</div></div>
+            <div class="mt-3"><label class="form-label" for="model">Model</label><input class="form-control" id="model" name="model" list="models" value="{{ default_model }}"><datalist id="models"><option value="openai/gpt-4o-mini"><option value="google/gemini-2.0-flash-001"><option value="anthropic/claude-3.5-haiku"><option value="meta-llama/llama-3.1-8b-instruct"><option value="deepseek/deepseek-chat"></datalist></div>
+            <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" role="switch" id="redact" name="redact" checked><label class="form-check-label" for="redact">Mask phone numbers and email addresses</label></div>
+            <p class="privacy-copy"><i class="bi bi-lock"></i>{% if local_mode %} Local mode is enabled: the selected model runs on this computer.{% else %} Chat text is sent only to your selected model for this analysis. It is not stored in this app.{% endif %}</p>
+            <button id="go" class="btn btn-catchup w-100" type="submit"><i class="bi bi-stars"></i> Create my catch-up</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-xl-7"><div id="out" aria-live="polite"><div class="card app-card empty-state"><div class="card-body"><span class="empty-orb"><i class="bi bi-chat-heart"></i></span><h2>Your briefing will appear here</h2><p>We’ll surface what needs your attention, decisions, deadlines, and the conversations that mattered.</p></div></div></div></div>
+    </div>
+  </main>
+  <script src="{{ url_for('static', filename='vendor/spark/assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
